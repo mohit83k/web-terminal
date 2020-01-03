@@ -1,5 +1,6 @@
 
-import framework ,  utils , security
+from database import framework 
+import  utils , security
 
 class Database(object):
 	"""
@@ -48,17 +49,18 @@ class Database(object):
 
 db = Database()
 
- 
 		
 
 def fetch_user(username):
-	print(username)
-	print(db.obj.fetch_user(username))
+	return db.obj.fetch_user(username)
+
+def add_user(username,password,salt):
+	db.obj.add_user( username, security.sha256_append_salt(password ,salt ) , salt)
 
 
 if __name__ == "__main__":
-	db.obj.add_user( "Random", security.sha256_append_salt("bad_password" , "bad_salt") )
-	fetch_user("Random")
+	db.obj.add_user( "Random", security.sha256_append_salt("bad_password" , "bad_salt") , "bad_salt")
+	print(fetch_user("Random"))
 	db.obj.save_progress()
 
 
