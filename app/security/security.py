@@ -6,3 +6,7 @@ def sha256_append_salt(key,salt):
 
 	value = key+salt
 	return hashlib.sha256(value.encode()).hexdigest()
+
+
+
+
