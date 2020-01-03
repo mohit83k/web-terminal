@@ -13,3 +13,6 @@ def write_json_file(filename,data):
     	json.dump(data ,outfile)
 
 
+def convert_to_json(obj):
+	return json.dumps(obj)
+
