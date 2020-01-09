@@ -1,0 +1,112 @@
+<html>
+    <head>
+        <title>Terminal</title>
+        <style>
+            .terminal{
+                margin-left: 1%;
+                margin-top: 5%;
+                margin-right: 30%;
+                background-color: black;
+                display: block;
+                width: 80%;
+                height: 80%;
+                overflow-y : auto
+            }
+
+            .term{
+                color: #e7e3de;
+                display: block; 
+                font-family:'Courier New', Courier, monospace;
+                font-size: 0.8em;
+
+            }
+
+            #command_feild{
+                background-color: black;
+                color: blanchedalmond;
+                border: none;
+            }
+
+            .title_bar {
+                margin: auto;
+                text-align: center;
+                font-size: 3em;
+                text-decoration-color: chocolate;
+                background-color: darkslategray;
+            }
+            
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="{{ url_for('static', filename = 'jquery.scrollTo.min.js') }}"></script>></script>
+    </head>
+
+    <body>
+        <div class="title_bar">Welcome</div>
+        <div class="terminal">
+            <div class="term">&nbsp;</div>
+            <div class="term">Welcome to shell</div>
+            <input type="text" id="command_feild" value=">>">
+
+        </div>
+
+        <form id="form-id" method="post" action="/logout">
+            <div onclick="document.getElementById('form-id').submit();">Logout</div>
+        </form>
+
+    </body>
+
+    <script>
+        function addTerm(data){
+            var divEle = document.createElement("div");
+            divEle.className = "term";
+            
+            divEle.innerHTML = data;
+
+            var base = document.getElementsByClassName("terminal")[0]
+            base.insertBefore(divEle, document.getElementById("command_feild"))
+        }
+
+
+        function executeCommand(input_command){
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    //output = this.responseText.replace(/(?:\r\n|\r|\n)/g, '<br>')
+                    //output = this.responseText.split("\n").join("<br />")
+                    output = this.responseText
+                    //output = output.replace(/(?:\r\n|\r|\n)/g, '<br>')
+                    console.log(output)
+                    response = JSON.parse(output)
+                    change_term(input_command,response.result)
+                }
+            };
+            xhttp.open("POST", "/execute", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("execute="+input_command);
+        }
+
+        function change_term(input_command,output){
+            document.getElementById("command_feild").value = ">>";
+            addTerm(">>"+input_command)
+            addTerm(">>"+output.replace(/(?:\r\n|\r|\n)/g, '<br>'))
+            // console.log(output.replace(/(?:\r\n|\r|\n)/g, '<br>'))
+            // var position = $("#command_feild").position()
+            // $(window).scroll(position)
+            document.getElementById("command_feild").focus();
+            
+            // $(this).scrollTo(document.getElementById("command_feild"));
+
+            $(".terminal").animate({
+                scrollTop : $('.terminal').offset().top + $('terminal').outerHeight(true) - $(window).height()
+            }, 500 );
+        
+        }
+
+        $("#command_feild").on('keyup', function (e) {
+            if (e.keyCode === 13) {
+                var input_command = document.getElementById("command_feild").value;
+                executeCommand(input_command.substring(2,input_command.length ) )
+            }
+        });
+    </script>
+</html>
