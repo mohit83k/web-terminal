@@ -1,11 +1,10 @@
-from flask import Flask , make_response , request
+from flask import Flask , make_response , request , render_template
 import database
 import account
 import command
 
 app = Flask(__name__)
 
-APP_SALT =  "random_12345"
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -14,7 +13,7 @@ def login():
 	if not logged in, login and go to home page
 	if invalid user , go to home page
 	"""
-	resp = make_response("Welcome")
+	resp = make_response(render_template("terminal.html"))
 	username = request.form['username']
 	password = request.form['password']
 	if request.method == "POST":
@@ -27,22 +26,22 @@ def login():
 				resp.set_cookie("session", account.gen_session_key(username))
 				return resp
 			
-			return "Invalid account"
+			return render_template("error.html")
 
 	print("Invalid method")
-	return "Invalid method"
+	return render_template("error.html")
 
 
 
 
 @app.route('/' , methods = ['GET' , 'POST'])
 def home():
-	return "Hello There"
+	return render_template("login.html")
 
 @app.route('/logout' , methods = ['GET' , 'POST'])
 def logout():
 	account.remove_session(request.cookies)
-	resp = make_response("Successfully logged Out")
+	resp = make_response(render_template("login.html"))
 	resp.set_cookie('session', '', expires=0)
 	return resp
 
